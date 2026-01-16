@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BookNest
 
-## Getting Started
+BookNest is a full-stack online bookstore built with Next.js 14, Prisma, NextAuth, and Stripe Checkout.
 
-First, run the development server:
+## How to run (step-by-step)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Install dependencies
+   ```bash
+   pnpm install
+   ```
+2. Approve Prisma build scripts (pnpm v10+ security feature)
+   ```bash
+   pnpm approve-builds
+   ```
+   Select `prisma` and `@prisma/engines` when prompted.
+3. Create your environment file
+   ```bash
+   copy .env.example .env
+   ```
+4. Run Prisma migrations
+   ```bash
+   pnpm prisma migrate dev
+   ```
+5. Seed the database
+   ```bash
+   pnpm seed
+   ```
+6. Start the dev server
+   ```bash
+   pnpm dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Seeded credentials
+- Admin: `admin@booknest.test` / `admin123`
+- User: `user@booknest.test` / `user123`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Checklist
 
-## Learn More
+**Implemented (MVP)**
+- Storefront: home, book list with search/filter/sort, book details, cart
+- Stripe Checkout flow with success page order creation
+- Auth: sign up, log in, log out with role-aware session
+- Orders history page for users
+- Admin dashboard with CRUD for books and categories
+- Prisma schema, migration SQL, and seed data (12+ books)
+- Tailwind UI with loading states and error messaging
 
-To learn more about Next.js, take a look at the following resources:
+**Nice to have**
+- Stripe webhook configured (route included, needs `STRIPE_WEBHOOK_SECRET`)
+- Inventory alerts and admin analytics
+- Shipping/tax calculation support
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+- Cart is stored in browser localStorage for MVP.
+- Images are served locally from `/public/images/books`.
