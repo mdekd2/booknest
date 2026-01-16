@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { CartButton } from "@/components/cart/CartButton";
 
@@ -9,23 +10,32 @@ export function Header() {
   const role = session?.user?.role;
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-        <Link href="/" className="text-xl font-bold text-slate-900">
-          BookNest
+    <header className="border-b border-[#e6dccf] bg-[#fffaf4]">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5">
+        <Link href="/" className="flex items-center gap-3">
+          <span className="relative h-11 w-11 overflow-hidden rounded-2xl border border-[#e6dccf] bg-[#f3ebe1] shadow-sm">
+            <Image
+              src="/images/logo.png"
+              alt="BookNest logo"
+              fill
+              className="object-cover"
+              priority
+            />
+          </span>
+          <span className="text-xl font-semibold text-[#1f1a17]">BookNest</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm text-slate-600">
-          <Link href="/books" className="hover:text-slate-900">
+        <nav className="flex items-center gap-4 text-sm text-[#6b5f54]">
+          <Link href="/books" className="hover:text-[#1f1a17]">
             Books
           </Link>
-          <Link href="/orders" className="hover:text-slate-900">
+          <Link href="/orders" className="hover:text-[#1f1a17]">
             Orders
           </Link>
-          <Link href="/account" className="hover:text-slate-900">
+          <Link href="/account" className="hover:text-[#1f1a17]">
             Account
           </Link>
           {role === "ADMIN" ? (
-            <Link href="/admin" className="hover:text-slate-900">
+            <Link href="/admin" className="hover:text-[#1f1a17]">
               Admin
             </Link>
           ) : null}
@@ -35,14 +45,14 @@ export function Header() {
           {session ? (
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
+              className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
             >
               Log out
             </button>
           ) : (
             <Link
               href="/account"
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
+              className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
             >
               Log in
             </Link>

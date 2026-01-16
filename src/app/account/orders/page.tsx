@@ -1,11 +1,10 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
 
-export default async function OrdersPage() {
+export default async function AccountOrdersPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     redirect("/account");
@@ -19,31 +18,23 @@ export default async function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-[#1f1a17]">Your orders</h1>
-          <p className="text-sm text-[#6b5f54]">
-            Track your BookNest purchases.
-          </p>
-        </div>
-        <Link
-          href="/books"
-          className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
-        >
-          Continue shopping
-        </Link>
+      <div>
+        <h1 className="text-2xl font-semibold text-[#1f1a17]">Orders</h1>
+        <p className="text-sm text-[#6b5f54]">
+          Track your purchases and status updates.
+        </p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#e6dccf] bg-[#fffaf4] p-10 text-center text-sm text-[#6b5f54]">
-          No orders yet. Browse the catalog and place your first order.
+        <div className="rounded-2xl border border-dashed border-[#e6dccf] bg-white/60 p-6 text-sm text-[#6b5f54]">
+          No orders yet.
         </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
             <div
               key={order.id}
-              className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm"
+              className="rounded-3xl border border-[#e6dccf] bg-white/70 p-5"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>

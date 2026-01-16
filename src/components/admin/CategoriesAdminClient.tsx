@@ -73,14 +73,14 @@ export function CategoriesAdminClient({
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Categories</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-[#1f1a17]">Categories</h1>
+          <p className="text-sm text-[#6b5f54]">
             Create and manage book categories.
           </p>
         </div>
         <Link
           href="/admin"
-          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
+          className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
         >
           Back to dashboard
         </Link>
@@ -88,9 +88,9 @@ export function CategoriesAdminClient({
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2"
+        className="grid gap-4 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm md:grid-cols-2"
       >
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Name
           <input
             value={form.name}
@@ -98,10 +98,10 @@ export function CategoriesAdminClient({
               setForm((prev) => ({ ...prev, name: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Slug
           <input
             value={form.slug}
@@ -109,17 +109,17 @@ export function CategoriesAdminClient({
               setForm((prev) => ({ ...prev, slug: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
         {error ? (
-          <p className="text-sm text-rose-500 md:col-span-2">{error}</p>
+          <p className="text-sm text-[#a54b3c] md:col-span-2">{error}</p>
         ) : null}
         <div className="flex flex-wrap gap-3 md:col-span-2">
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-400"
+            className="rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
           >
             {saving ? "Saving..." : form.id ? "Update category" : "Add category"}
           </button>
@@ -127,7 +127,7 @@ export function CategoriesAdminClient({
             <button
               type="button"
               onClick={() => setForm({ id: "", name: "", slug: "" })}
-              className="rounded-full border border-slate-200 px-6 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300"
+              className="rounded-full border border-[#e6dccf] px-6 py-2 text-sm font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
             >
               Cancel edit
             </button>
@@ -139,26 +139,26 @@ export function CategoriesAdminClient({
         {categories.map((category) => (
           <div
             key={category.id}
-            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4"
+            className="flex items-center justify-between rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-4 shadow-sm"
           >
             <div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-[#1f1a17]">
                 {category.name}
               </p>
-              <p className="text-xs text-slate-500">{category.slug}</p>
+              <p className="text-xs text-[#6b5f54]">{category.slug}</p>
             </div>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => handleEdit(category)}
-                className="rounded-full border border-slate-200 px-4 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300"
+                className="rounded-full border border-[#e6dccf] px-4 py-1 text-xs font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
               >
                 Edit
               </button>
               <button
                 type="button"
                 onClick={() => handleDelete(category.id)}
-                className="rounded-full border border-rose-200 px-4 py-1 text-xs font-semibold text-rose-600 hover:border-rose-300"
+                className="rounded-full border border-[#e7c1b6] px-4 py-1 text-xs font-semibold text-[#a54b3c] hover:border-[#d9a99a]"
               >
                 Delete
               </button>

@@ -46,7 +46,7 @@ export function AddToCartButton({ book }: AddToCartButtonProps) {
       type="button"
       onClick={handleAdd}
       disabled={remaining <= 0 || isAdding}
-      className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-400"
+      className="rounded-full bg-[#1f3a2f] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
     >
       {remaining <= 0 ? "Out of stock" : "Add to cart"}
     </button>

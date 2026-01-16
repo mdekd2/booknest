@@ -33,7 +33,7 @@ BookNest is a full-stack online bookstore built with Next.js 14, Prisma, NextAut
 Open [http://localhost:3000](http://localhost:3000).
 
 ### Seeded credentials
-- Admin: `admin@booknest.test` / `admin123`
+- Admin: `admin@admin.com` / `Admin123`
 - User: `user@booknest.test` / `user123`
 
 ## Checklist

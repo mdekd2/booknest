@@ -126,14 +126,14 @@ export function BooksAdminClient({
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Books</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-[#1f1a17]">Books</h1>
+          <p className="text-sm text-[#6b5f54]">
             Create and manage the BookNest catalog.
           </p>
         </div>
         <Link
           href="/admin"
-          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
+          className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
         >
           Back to dashboard
         </Link>
@@ -141,9 +141,9 @@ export function BooksAdminClient({
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:grid-cols-2"
+        className="grid gap-4 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm lg:grid-cols-2"
       >
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Title
           <input
             value={form.title}
@@ -151,10 +151,10 @@ export function BooksAdminClient({
               setForm((prev) => ({ ...prev, title: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Slug
           <input
             value={form.slug}
@@ -162,10 +162,10 @@ export function BooksAdminClient({
               setForm((prev) => ({ ...prev, slug: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Author
           <input
             value={form.author}
@@ -173,10 +173,10 @@ export function BooksAdminClient({
               setForm((prev) => ({ ...prev, author: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Category
           <select
             value={form.categoryId}
@@ -184,7 +184,7 @@ export function BooksAdminClient({
               setForm((prev) => ({ ...prev, categoryId: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           >
             <option value="">Select category</option>
             {categories.map((category) => (
@@ -194,7 +194,7 @@ export function BooksAdminClient({
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Price (cents)
           <input
             type="number"
@@ -207,10 +207,10 @@ export function BooksAdminClient({
               }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Stock
           <input
             type="number"
@@ -223,10 +223,10 @@ export function BooksAdminClient({
               }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Currency
           <input
             value={form.currency}
@@ -234,10 +234,10 @@ export function BooksAdminClient({
               setForm((prev) => ({ ...prev, currency: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
           Image URL
           <input
             value={form.imageUrl}
@@ -245,10 +245,10 @@ export function BooksAdminClient({
               setForm((prev) => ({ ...prev, imageUrl: event.target.value }))
             }
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 lg:col-span-2">
+        <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54] lg:col-span-2">
           Description
           <textarea
             value={form.description}
@@ -257,17 +257,17 @@ export function BooksAdminClient({
             }
             rows={4}
             required
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+            className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
         </label>
         {error ? (
-          <p className="text-sm text-rose-500 lg:col-span-2">{error}</p>
+          <p className="text-sm text-[#a54b3c] lg:col-span-2">{error}</p>
         ) : null}
         <div className="flex flex-wrap gap-3 lg:col-span-2">
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-400"
+            className="rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
           >
             {saving ? "Saving..." : form.id ? "Update book" : "Add book"}
           </button>
@@ -275,7 +275,7 @@ export function BooksAdminClient({
             <button
               type="button"
               onClick={() => setForm(emptyForm)}
-              className="rounded-full border border-slate-200 px-6 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300"
+              className="rounded-full border border-[#e6dccf] px-6 py-2 text-sm font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
             >
               Cancel edit
             </button>
@@ -287,13 +287,13 @@ export function BooksAdminClient({
         {books.map((book) => (
           <div
             key={book.id}
-            className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-[#1f1a17]">
                 {book.title}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[#6b5f54]">
                 {book.author} · {book.category.name}
               </p>
             </div>
@@ -301,14 +301,14 @@ export function BooksAdminClient({
               <button
                 type="button"
                 onClick={() => handleEdit(book)}
-                className="rounded-full border border-slate-200 px-4 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300"
+                className="rounded-full border border-[#e6dccf] px-4 py-1 text-xs font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
               >
                 Edit
               </button>
               <button
                 type="button"
                 onClick={() => handleDelete(book.id)}
-                className="rounded-full border border-rose-200 px-4 py-1 text-xs font-semibold text-rose-600 hover:border-rose-300"
+                className="rounded-full border border-[#e7c1b6] px-4 py-1 text-xs font-semibold text-[#a54b3c] hover:border-[#d9a99a]"
               >
                 Delete
               </button>

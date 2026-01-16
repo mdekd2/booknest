@@ -40,21 +40,21 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   });
 
   return (
-    <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-8">
+    <div className="space-y-6 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 shadow-sm">
       <ClearCartOnSuccess />
-      <h1 className="text-2xl font-semibold text-slate-900">
+      <h1 className="text-2xl font-semibold text-[#1f1a17]">
         Payment confirmed!
       </h1>
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-[#6b5f54]">
         Thank you for your purchase. We have emailed your receipt and created
         your order.
       </p>
       {order ? (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-slate-700">
+          <p className="text-sm font-medium text-[#2c2a25]">
             Order total: {formatPrice(order.totalCents, order.currency)}
           </p>
-          <ul className="space-y-2 text-sm text-slate-600">
+          <ul className="space-y-2 text-sm text-[#6b5f54]">
             {order.items.map((item) => (
               <li key={item.id}>
                 {item.book.title} × {item.quantity}
@@ -63,7 +63,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </ul>
         </div>
       ) : (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[#6b5f54]">
           We are finalizing your order. Refresh in a moment or check your
           orders page.
         </p>
@@ -71,13 +71,13 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/books"
-          className="rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+          className="rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026]"
         >
           Continue shopping
         </Link>
         <Link
           href="/orders"
-          className="rounded-full border border-slate-200 px-6 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300"
+          className="rounded-full border border-[#e6dccf] px-6 py-2 text-sm font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
         >
           View orders
         </Link>

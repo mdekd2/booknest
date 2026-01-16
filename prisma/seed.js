@@ -167,15 +167,19 @@ async function main() {
     });
   }
 
-  const adminPassword = await bcrypt.hash("admin123", 10);
+  const adminPassword = await bcrypt.hash("Admin123", 10);
   const userPassword = await bcrypt.hash("user123", 10);
 
   await prisma.user.upsert({
-    where: { email: "admin@booknest.test" },
-    update: {},
+    where: { email: "admin@admin.com" },
+    update: {
+      passwordHash: adminPassword,
+      role: "ADMIN",
+      name: "BookNest Admin",
+    },
     create: {
       name: "BookNest Admin",
-      email: "admin@booknest.test",
+      email: "admin@admin.com",
       passwordHash: adminPassword,
       role: "ADMIN",
     },

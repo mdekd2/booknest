@@ -1,170 +1,121 @@
-"use client";
-
-import { useState } from "react";
-import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import { formatPrice } from "@/lib/format";
+import AccountAuthForms from "./components/AccountAuthForms";
 
-export default function AccountPage() {
-  const { data: session } = useSession();
-  const [signInError, setSignInError] = useState<string | null>(null);
-  const [signUpError, setSignUpError] = useState<string | null>(null);
-  const [signingIn, setSigningIn] = useState(false);
-  const [signingUp, setSigningUp] = useState(false);
+export default async function AccountPage() {
+  const session = await getServerSession(authOptions);
 
-  if (session?.user) {
-    return (
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-8">
-        <h1 className="text-2xl font-semibold text-slate-900">Account</h1>
-        <p className="text-sm text-slate-600">
-          Signed in as {session.user.email}
-        </p>
-        <Link
-          href="/orders"
-          className="inline-flex rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
-        >
-          View orders
-        </Link>
-      </div>
-    );
+  if (!session?.user?.id) {
+    return <AccountAuthForms />;
   }
 
-  const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSignInError(null);
-    setSigningIn(true);
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
 
-    const form = new FormData(event.currentTarget);
-    const email = String(form.get("email") ?? "");
-    const password = String(form.get("password") ?? "");
-
-    const response = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setSigningIn(false);
-    if (!response?.ok) {
-      setSignInError("Invalid email or password");
-    }
-  };
-
-  const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSignUpError(null);
-    setSigningUp(true);
-
-    const form = new FormData(event.currentTarget);
-    const payload = {
-      name: String(form.get("name") ?? ""),
-      email: String(form.get("email") ?? ""),
-      password: String(form.get("password") ?? ""),
-    };
-
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error ?? "Sign up failed");
-      }
-
-      await signIn("credentials", {
-        email: payload.email,
-        password: payload.password,
-        callbackUrl: "/",
-      });
-    } catch (error) {
-      setSignUpError(
-        error instanceof Error ? error.message : "Sign up failed"
-      );
-      setSigningUp(false);
-    }
-  };
+  const recentOrders = await prisma.order.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      <section className="rounded-2xl border border-slate-200 bg-white p-8">
-        <h1 className="text-2xl font-semibold text-slate-900">Log in</h1>
-        <form onSubmit={handleSignIn} className="mt-6 space-y-4">
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Email
-            <input
-              type="email"
-              name="email"
-              required
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Password
-            <input
-              type="password"
-              name="password"
-              required
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
-            />
-          </label>
-          {signInError ? (
-            <p className="text-sm text-rose-500">{signInError}</p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={signingIn}
-            className="inline-flex rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {signingIn ? "Signing in..." : "Log in"}
-          </button>
-        </form>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-[#1f1a17]">My account</h1>
+        <p className="text-sm text-[#6b5f54]">
+          Manage your profile and orders.
+        </p>
+      </div>
+
+      <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-[#1f1a17]">Overview</h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <InfoCard label="Member since" value={user?.createdAt.toDateString() ?? "—"} />
+          <InfoCard label="Orders" value={`${recentOrders.length}`} />
+          <InfoCard label="Status" value="Active" />
+        </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-8">
-        <h2 className="text-2xl font-semibold text-slate-900">Create account</h2>
-        <form onSubmit={handleSignUp} className="mt-6 space-y-4">
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Name
-            <input
-              type="text"
-              name="name"
-              required
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Email
-            <input
-              type="email"
-              name="email"
-              required
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            Password
-            <input
-              type="password"
-              name="password"
-              required
-              minLength={6}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
-            />
-          </label>
-          {signUpError ? (
-            <p className="text-sm text-rose-500">{signUpError}</p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={signingUp}
-            className="inline-flex rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-400"
+      <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-[#1f1a17]">
+            Recent orders
+          </h2>
+          <Link
+            href="/account/orders"
+            className="text-sm font-semibold text-[#1f3a2f] underline underline-offset-4"
           >
-            {signingUp ? "Creating account..." : "Sign up"}
-          </button>
-        </form>
+            View all
+          </Link>
+        </div>
+
+        {recentOrders.length === 0 ? (
+          <p className="mt-4 text-sm text-[#6b5f54]">
+            No orders yet. Browse the catalog to get started.
+          </p>
+        ) : (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-[#e6dccf]">
+            <div className="grid grid-cols-3 bg-[#f3ebe1] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-[#6b5f54] sm:grid-cols-4">
+              <div>Order</div>
+              <div>Date</div>
+              <div>Total</div>
+              <div className="hidden sm:block">Status</div>
+            </div>
+            {recentOrders.map((order) => (
+              <div
+                key={order.id}
+                className="grid grid-cols-3 border-t border-[#e6dccf] px-4 py-3 text-sm text-[#1f1a17] sm:grid-cols-4"
+              >
+                <div className="font-medium">#{order.id.slice(0, 6)}</div>
+                <div className="text-[#6b5f54]">
+                  {order.createdAt.toLocaleDateString()}
+                </div>
+                <div className="font-medium">
+                  {formatPrice(order.totalCents, order.currency)}
+                </div>
+                <div className="hidden sm:block">
+                  <span className="rounded-full bg-[#e4efe8] px-2 py-1 text-xs font-semibold text-[#1f3a2f]">
+                    {order.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
+
+      <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-[#1f1a17]">Quick actions</h2>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            href="/account/settings"
+            className="rounded-full bg-[#1f3a2f] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026]"
+          >
+            Edit profile
+          </Link>
+          <Link
+            href="/account/orders"
+            className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
+          >
+            Track orders
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function InfoCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-[#e6dccf] bg-white/70 p-4">
+      <div className="text-xs font-semibold uppercase tracking-wide text-[#6b5f54]">
+        {label}
+      </div>
+      <div className="mt-2 text-lg font-semibold text-[#1f1a17]">{value}</div>
     </div>
   );
 }
