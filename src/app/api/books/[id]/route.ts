@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { bookSchema } from "@/lib/validators";
 
-type RouteParams = { params: { id: string } };
+type RouteParams = { params: Promise<{ id: string }> };
 
 export async function PUT(request: Request, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
@@ -12,7 +12,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  if (!params?.id) {
+  const resolvedParams = await params;
+  if (!resolvedParams?.id) {
     return NextResponse.json({ error: "Missing book id." }, { status: 400 });
   }
 
@@ -21,7 +22,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const data = bookSchema.parse(body);
 
     const book = await prisma.book.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data,
       include: { category: true },
     });
@@ -41,10 +42,11 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  if (!params?.id) {
+  const resolvedParams = await params;
+  if (!resolvedParams?.id) {
     return NextResponse.json({ error: "Missing book id." }, { status: 400 });
   }
 
-  await prisma.book.delete({ where: { id: params.id } });
+  await prisma.book.delete({ where: { id: resolvedParams.id } });
   return NextResponse.json({ ok: true });
 }
