@@ -27,8 +27,8 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
       ...(query
         ? {
             OR: [
-              { title: { contains: query, mode: "insensitive" } },
-              { author: { contains: query, mode: "insensitive" } },
+              { title: { contains: query } },
+              { author: { contains: query } },
             ],
           }
         : {}),

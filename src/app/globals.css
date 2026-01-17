@@ -9,6 +9,8 @@
   --accent: #1f3a2f;
   --accent-soft: #e4efe8;
   --muted: #6b5f54;
+  --font-geist-sans: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 @theme inline {
