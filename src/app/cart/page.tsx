@@ -60,7 +60,7 @@ export default function CartPage() {
                     {item.title}
                   </h2>
                   <p className="text-sm text-[#6b5f54]">
-                    {formatPrice(item.priceCents, item.currency)}
+                    {formatPrice(item.priceCents)}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">

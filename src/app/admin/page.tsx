@@ -53,7 +53,7 @@ export default async function AdminPage() {
                   <span className="font-semibold text-[#1f1a17]">
                     {order.user.email}
                   </span>
-                  <span>{formatPrice(order.totalCents, order.currency)}</span>
+                  <span>{formatPrice(order.totalCents)}</span>
                 </div>
                 <p className="text-xs text-[#9b8f84]">
                   Status: {order.status}

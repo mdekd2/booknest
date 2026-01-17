@@ -80,7 +80,7 @@ export default async function AccountPage() {
                   {order.createdAt.toLocaleDateString()}
                 </div>
                 <div className="font-medium">
-                  {formatPrice(order.totalCents, order.currency)}
+                  {formatPrice(order.totalCents)}
                 </div>
                 <div className="hidden sm:block">
                   <span className="rounded-full bg-[#e4efe8] px-2 py-1 text-xs font-semibold text-[#1f3a2f]">

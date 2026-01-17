@@ -43,7 +43,7 @@ export function BookCard({ book, labels }: BookCardProps) {
         <h3 className="text-base font-semibold text-[#1f1a17]">{book.title}</h3>
         <p className="text-sm text-[#7b6d62]">{book.author}</p>
         <p className="text-sm font-medium text-[#2c2a25]">
-          {formatPrice(book.priceCents, book.currency)}
+          {formatPrice(book.priceCents)}
         </p>
         <p className="text-xs text-[#9b8f84]">
           {book.stock > 0

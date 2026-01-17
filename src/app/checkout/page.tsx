@@ -109,7 +109,7 @@ export default function CheckoutPage() {
                 {item.title} × {item.quantity}
               </span>
               <span>
-                {formatPrice(item.priceCents * item.quantity, item.currency)}
+                {formatPrice(item.priceCents * item.quantity)}
               </span>
             </li>
           ))}

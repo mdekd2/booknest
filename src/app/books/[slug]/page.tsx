@@ -56,7 +56,7 @@ export default async function BookDetailsPage({
           </p>
         </div>
         <p className="text-lg font-semibold text-[#1f1a17]">
-          {formatPrice(book.priceCents, book.currency)}
+          {formatPrice(book.priceCents)}
         </p>
         <p className="text-sm leading-7 text-[#6b5f54]">{book.description}</p>
         <div className="flex flex-wrap items-center gap-3">

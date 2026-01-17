@@ -53,7 +53,7 @@ export default async function OrdersPage() {
                     {t("orders.orderTotal")}
                   </p>
                   <p className="text-lg font-semibold text-[#1f1a17]">
-                    {formatPrice(order.totalCents, order.currency)}
+                    {formatPrice(order.totalCents)}
                   </p>
                 </div>
                 <span className="rounded-full bg-[#e4efe8] px-3 py-1 text-xs font-semibold uppercase text-[#1f3a2f]">

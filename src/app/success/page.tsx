@@ -52,7 +52,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
         <div className="space-y-3">
           <p className="text-sm font-medium text-[#2c2a25]">
             {t("success.orderTotal")}:{" "}
-            {formatPrice(order.totalCents, order.currency)}
+            {formatPrice(order.totalCents)}
           </p>
           <ul className="space-y-2 text-sm text-[#6b5f54]">
             {order.items.map((item) => (
