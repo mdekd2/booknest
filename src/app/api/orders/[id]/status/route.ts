@@ -14,6 +14,8 @@ const allowedStatuses = [
   "CANCELLED",
 ] as const;
 
+type AllowedStatus = (typeof allowedStatuses)[number];
+
 export async function PUT(request: Request, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "ADMIN") {
@@ -28,13 +30,13 @@ export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const body = await request.json();
     const status = String(body.status ?? "");
-    if (!allowedStatuses.includes(status as typeof allowedStatuses[number])) {
+    if (!allowedStatuses.includes(status as AllowedStatus)) {
       return NextResponse.json({ error: "Invalid status." }, { status: 400 });
     }
 
     const order = await prisma.order.update({
       where: { id: resolvedParams.id },
-      data: { status },
+      data: { status: status as AllowedStatus },
     });
 
     return NextResponse.json(order);
