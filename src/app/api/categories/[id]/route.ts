@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { categorySchema } from "@/lib/validators";
 
-type RouteParams = { params: { id: string } };
+type RouteParams = { params: Promise<{ id: string }> };
 
 export async function PUT(request: Request, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
@@ -12,12 +12,17 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const resolvedParams = await params;
+  if (!resolvedParams?.id) {
+    return NextResponse.json({ error: "Missing category id." }, { status: 400 });
+  }
+
   try {
     const body = await request.json();
     const data = categorySchema.parse(body);
 
     const category = await prisma.category.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data,
     });
     return NextResponse.json(category);
@@ -35,6 +40,11 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  await prisma.category.delete({ where: { id: params.id } });
+  const resolvedParams = await params;
+  if (!resolvedParams?.id) {
+    return NextResponse.json({ error: "Missing category id." }, { status: 400 });
+  }
+
+  await prisma.category.delete({ where: { id: resolvedParams.id } });
   return NextResponse.json({ ok: true });
 }
