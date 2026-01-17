@@ -5,7 +5,11 @@ import { stripe } from "@/lib/stripe";
 import { createOrderFromStripeSession } from "@/lib/orders";
 
 export async function POST(request: Request) {
-  const signature = headers().get("stripe-signature");
+  const headerStore = await Promise.resolve(headers());
+  const signature =
+    typeof headerStore?.get === "function"
+      ? headerStore.get("stripe-signature")
+      : null;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {
