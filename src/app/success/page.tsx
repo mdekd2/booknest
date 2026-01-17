@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { stripe } from "@/lib/stripe";
+import { requireStripe } from "@/lib/stripe";
 import { createOrderFromStripeSession } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 import { ClearCartOnSuccess } from "@/components/cart/ClearCartOnSuccess";
@@ -33,6 +33,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     );
   }
 
+  const stripe = requireStripe();
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   await createOrderFromStripeSession(session);
 

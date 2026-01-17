@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { requireStripe } from "@/lib/stripe";
 import { createOrderFromStripeSession } from "@/lib/orders";
 
 export async function POST(request: Request) {
@@ -19,6 +19,7 @@ export async function POST(request: Request) {
   const body = await request.text();
 
   try {
+    const stripe = requireStripe();
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
