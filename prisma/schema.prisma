@@ -14,7 +14,10 @@ enum Role {
 
 enum OrderStatus {
   PENDING
-  PAID
+  CONFIRMED
+  READY
+  IN_TRANSIT
+  DELIVERED
   CANCELLED
 }
 
@@ -78,7 +81,7 @@ model Book {
   title       String
   slug        String   @unique
   author      String
-  description String
+  description String   @db.Text
   priceCents  Int
   currency    String
   stock       Int

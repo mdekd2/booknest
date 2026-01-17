@@ -1,6 +1,8 @@
-export function formatPrice(amountCents: number, currency = "USD") {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-  }).format(amountCents / 100);
+export function formatPrice(amountCents: number) {
+  const amount = amountCents / 100;
+  const formatted = new Intl.NumberFormat("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+  return `${formatted} UM`;
 }

@@ -2,8 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { BookCard } from "@/components/books/BookCard";
+import { getTranslator } from "@/lib/i18n/server";
 
 export default async function Home() {
+  const { t } = await getTranslator();
   const [categories, featuredBooks] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: "asc" } }),
     prisma.book.findMany({
@@ -37,31 +39,24 @@ export default async function Home() {
               />
             </span>
             <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[#6b5f54]">
-              BookNest
+              {t("home.badge")}
             </span>
           </div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6b5f54]">
-            Discover your next favorite book
+            {t("home.tagline")}
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-[#1f1a17] sm:text-5xl">
-            BookNest is your cozy corner for thoughtful reads.
+            {t("home.title")}
           </h1>
           <p className="text-base text-[#6b5f54]">
-            Browse curated collections, build your cart, and check out securely
-            with Stripe.
+            {t("home.subtitle")}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
               href="/books"
               className="rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026]"
             >
-              Browse books
-            </Link>
-            <Link
-              href="/account"
-              className="rounded-full border border-[#d6c8b9] px-6 py-2 text-sm font-semibold text-[#1f1a17] hover:border-[#c6b8a9]"
-            >
-              Sign in
+              {t("home.browse")}
             </Link>
           </div>
         </div>
@@ -70,25 +65,32 @@ export default async function Home() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-[#1f1a17]">
-            Featured books
+            {t("home.featured")}
           </h2>
           <Link
             href="/books"
             className="text-sm font-medium text-[#1f3a2f] hover:text-[#183026]"
           >
-            View all
+            {t("home.viewAll")}
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredBooks.map((book) => (
-            <BookCard key={book.id} book={book} />
+            <BookCard
+              key={book.id}
+              book={book}
+              labels={{
+                inStock: t("book.inStock"),
+                outOfStock: t("cart.outOfStock"),
+              }}
+            />
           ))}
         </div>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-[#1f1a17]">
-          Shop by category
+          {t("home.categories")}
         </h2>
         <div className="flex flex-wrap gap-3">
           {categories.map((category) => (

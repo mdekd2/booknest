@@ -4,23 +4,31 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-const items = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/books", label: "Books" },
-  { href: "/admin/categories", label: "Categories" },
-  { href: "/admin/orders", label: "Orders" },
-  { href: "/admin/users", label: "Users" },
-];
+type SidebarLabels = {
+  dashboard: string;
+  books: string;
+  categories: string;
+  orders: string;
+  users: string;
+  panel: string;
+};
 
-export default function Sidebar() {
+export default function Sidebar({ labels }: { labels: SidebarLabels }) {
   const pathname = usePathname();
+  const items = [
+    { href: "/admin", label: labels.dashboard },
+    { href: "/admin/books", label: labels.books },
+    { href: "/admin/categories", label: labels.categories },
+    { href: "/admin/orders", label: labels.orders },
+    { href: "/admin/users", label: labels.users },
+  ];
 
   return (
     <div className="space-y-6">
       <div>
         <div className="text-lg font-semibold text-[#1f1a17]">BookNest</div>
         <div className="text-xs uppercase tracking-[0.3em] text-[#6b5f54]">
-          Admin panel
+          {labels.panel}
         </div>
       </div>
 

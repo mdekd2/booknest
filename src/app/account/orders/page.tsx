@@ -3,8 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
+import { getTranslator } from "@/lib/i18n/server";
 
 export default async function AccountOrdersPage() {
+  const { t } = await getTranslator();
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     redirect("/account");
@@ -19,15 +21,15 @@ export default async function AccountOrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-[#1f1a17]">Orders</h1>
-        <p className="text-sm text-[#6b5f54]">
-          Track your purchases and status updates.
-        </p>
+        <h1 className="text-2xl font-semibold text-[#1f1a17]">
+          {t("account.orders")}
+        </h1>
+        <p className="text-sm text-[#6b5f54]">{t("orders.subtitle")}</p>
       </div>
 
       {orders.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[#e6dccf] bg-white/60 p-6 text-sm text-[#6b5f54]">
-          No orders yet.
+          {t("orders.empty")}
         </div>
       ) : (
         <div className="space-y-4">
@@ -38,7 +40,9 @@ export default async function AccountOrdersPage() {
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-[#6b5f54]">Order total</p>
+                  <p className="text-sm text-[#6b5f54]">
+                    {t("orders.orderTotal")}
+                  </p>
                   <p className="text-lg font-semibold text-[#1f1a17]">
                     {formatPrice(order.totalCents, order.currency)}
                   </p>

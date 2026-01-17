@@ -6,18 +6,24 @@ type AccountSidebarProps = {
     name?: string | null;
     email?: string | null;
   };
+  memberLabel: string;
+  navItems: { href: string; label: string }[];
 };
 
-export default function AccountSidebar({ user }: AccountSidebarProps) {
+export default function AccountSidebar({
+  user,
+  memberLabel,
+  navItems,
+}: AccountSidebarProps) {
   return (
     <div className="space-y-6">
       <div>
         <div className="text-lg font-semibold text-[#1f1a17]">
-          {user.name ?? "BookNest member"}
+          {user.name ?? memberLabel}
         </div>
         <div className="text-sm text-[#6b5f54]">{user.email ?? ""}</div>
       </div>
-      <AccountNav />
+      <AccountNav items={navItems} />
       <SignOutButton />
     </div>
   );

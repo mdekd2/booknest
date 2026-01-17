@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
-const defaultImage = "/images/books/placeholder.svg";
+const defaultImage = "";
 
 const categories = [
   { name: "Fiction", slug: "fiction" },
@@ -19,7 +19,7 @@ const books = [
     description:
       "A lyrical mystery about a town that learns its river remembers everything.",
     priceCents: 1899,
-    currency: "USD",
+    currency: "MRU",
     stock: 14,
     imageUrl: defaultImage,
     categorySlug: "fiction",
@@ -31,7 +31,7 @@ const books = [
     description:
       "A practical guide to building resilient teams and sustainable products.",
     priceCents: 2599,
-    currency: "USD",
+    currency: "MRU",
     stock: 12,
     imageUrl: defaultImage,
     categorySlug: "business",
@@ -43,7 +43,7 @@ const books = [
     description:
       "Explore cosmology through approachable math and vivid storytelling.",
     priceCents: 2399,
-    currency: "USD",
+    currency: "MRU",
     stock: 9,
     imageUrl: defaultImage,
     categorySlug: "science",
@@ -55,7 +55,7 @@ const books = [
     description:
       "A sweeping family saga told through the journals of four generations.",
     priceCents: 2099,
-    currency: "USD",
+    currency: "MRU",
     stock: 10,
     imageUrl: defaultImage,
     categorySlug: "fiction",
@@ -67,7 +67,7 @@ const books = [
     description:
       "Gentle productivity practices for ambitious, overwhelmed humans.",
     priceCents: 1799,
-    currency: "USD",
+    currency: "MRU",
     stock: 18,
     imageUrl: defaultImage,
     categorySlug: "non-fiction",
@@ -79,7 +79,7 @@ const books = [
     description:
       "Learn analytics fundamentals with clear visuals and real case studies.",
     priceCents: 2699,
-    currency: "USD",
+    currency: "MRU",
     stock: 15,
     imageUrl: defaultImage,
     categorySlug: "business",
@@ -91,7 +91,7 @@ const books = [
     description:
       "A haunting tale of memory, loss, and a garden that grows glass.",
     priceCents: 1999,
-    currency: "USD",
+    currency: "MRU",
     stock: 11,
     imageUrl: defaultImage,
     categorySlug: "fiction",
@@ -103,7 +103,7 @@ const books = [
     description:
       "A grounded introduction to scientific thinking in everyday decisions.",
     priceCents: 2199,
-    currency: "USD",
+    currency: "MRU",
     stock: 13,
     imageUrl: defaultImage,
     categorySlug: "science",
@@ -115,7 +115,7 @@ const books = [
     description:
       "Reimagining markets with transparency, equity, and long-term value.",
     priceCents: 2299,
-    currency: "USD",
+    currency: "MRU",
     stock: 16,
     imageUrl: defaultImage,
     categorySlug: "business",
@@ -127,7 +127,7 @@ const books = [
     description:
       "Essays on solitude, nature, and the courage to start over.",
     priceCents: 1899,
-    currency: "USD",
+    currency: "MRU",
     stock: 20,
     imageUrl: defaultImage,
     categorySlug: "non-fiction",
@@ -139,7 +139,7 @@ const books = [
     description:
       "A pocket-sized guide to the everyday marvels hiding in plain sight.",
     priceCents: 1699,
-    currency: "USD",
+    currency: "MRU",
     stock: 22,
     imageUrl: defaultImage,
     categorySlug: "non-fiction",
@@ -151,7 +151,7 @@ const books = [
     description:
       "A playful tour of quantum physics with analogies you will remember.",
     priceCents: 2499,
-    currency: "USD",
+    currency: "MRU",
     stock: 8,
     imageUrl: defaultImage,
     categorySlug: "science",

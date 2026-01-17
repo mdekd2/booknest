@@ -5,23 +5,25 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatPrice } from "@/lib/format";
+import { useClientTranslator } from "@/lib/i18n/client";
 
 export default function CartPage() {
   const { items, totalCents, updateQuantity, removeItem } = useCart();
   const [pending, setPending] = useState<string | null>(null);
+  const { t } = useClientTranslator();
 
   if (items.length === 0) {
     return (
       <div className="space-y-4 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-10 text-center shadow-sm">
-        <h1 className="text-2xl font-semibold text-[#1f1a17]">Your cart</h1>
-        <p className="text-sm text-[#6b5f54]">
-          Your cart is empty. Browse the collection to add books.
-        </p>
+        <h1 className="text-2xl font-semibold text-[#1f1a17]">
+          {t("cart.title")}
+        </h1>
+        <p className="text-sm text-[#6b5f54]">{t("cart.empty")}</p>
         <Link
           href="/books"
           className="inline-flex rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026]"
         >
-          Browse books
+          {t("cart.browse")}
         </Link>
       </div>
     );
@@ -30,10 +32,10 @@ export default function CartPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold text-[#1f1a17]">Your cart</h1>
-        <p className="text-sm text-[#6b5f54]">
-          Review your selections before checkout.
-        </p>
+        <h1 className="text-2xl font-semibold text-[#1f1a17]">
+          {t("cart.title")}
+        </h1>
+        <p className="text-sm text-[#6b5f54]">{t("cart.review")}</p>
       </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
         <div className="space-y-4">
@@ -43,12 +45,14 @@ export default function CartPage() {
               className="flex flex-col gap-4 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-4 shadow-sm sm:flex-row sm:items-center"
             >
               <div className="relative h-32 w-24 overflow-hidden rounded-2xl bg-[#f3ebe1]">
-                <Image
-                  src={item.imageUrl}
-                  alt={item.title}
-                  fill
-                  className="object-cover"
-                />
+                {item.imageUrl && !item.imageUrl.includes("placeholder") ? (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                  />
+                ) : null}
               </div>
               <div className="flex-1 space-y-2">
                 <div>
@@ -61,7 +65,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <label className="text-sm text-[#6b5f54]">
-                    Qty
+                    {t("cart.qty")}
                     <input
                       type="number"
                       min={1}
@@ -81,7 +85,7 @@ export default function CartPage() {
                     onClick={() => removeItem(item.bookId)}
                     className="text-sm font-medium text-[#a54b3c] hover:text-[#8e3e31]"
                   >
-                    Remove
+                    {t("cart.remove")}
                   </button>
                 </div>
               </div>
@@ -95,19 +99,21 @@ export default function CartPage() {
           ))}
         </div>
         <aside className="h-fit rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-[#1f1a17]">Order summary</h2>
+          <h2 className="text-lg font-semibold text-[#1f1a17]">
+            {t("cart.summary")}
+          </h2>
           <div className="mt-4 flex items-center justify-between text-sm text-[#6b5f54]">
-            <span>Subtotal</span>
+            <span>{t("cart.subtotal")}</span>
             <span>{formatPrice(totalCents)}</span>
           </div>
           <p className="mt-2 text-xs text-[#9b8f84]">
-            Taxes and shipping are calculated at checkout.
+            {t("cart.taxes")}
           </p>
           <Link
             href="/checkout"
             className="mt-6 inline-flex w-full justify-center rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026]"
           >
-            Proceed to checkout
+            {t("cart.checkout")}
           </Link>
         </aside>
       </div>

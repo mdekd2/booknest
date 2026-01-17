@@ -47,7 +47,7 @@ export async function createOrderFromStripeSession(
         userId: session.metadata?.userId ?? "",
         totalCents,
         currency: "USD",
-        status: "PAID",
+        status: "CONFIRMED",
         stripeSessionId: session.id,
       },
     });

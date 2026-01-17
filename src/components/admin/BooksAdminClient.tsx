@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 
 type Category = {
@@ -35,9 +35,9 @@ const emptyForm = {
   author: "",
   description: "",
   priceCents: 0,
-  currency: "USD",
+  currency: "MRU",
   stock: 0,
-  imageUrl: "/images/books/placeholder.svg",
+  imageUrl: "",
   categoryId: "",
 };
 
@@ -50,6 +50,8 @@ export function BooksAdminClient({
   const [form, setForm] = useState<typeof emptyForm>(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleEdit = (book: Book) => {
     setForm({
@@ -78,6 +80,12 @@ export function BooksAdminClient({
     event.preventDefault();
     setError(null);
     setSaving(true);
+
+    if (form.id && form.id === "undefined") {
+      setSaving(false);
+      setError("Missing book id.");
+      return;
+    }
 
     const payload = {
       title: form.title,
@@ -119,6 +127,37 @@ export function BooksAdminClient({
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/upload/book-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error ?? "Upload failed");
+      }
+
+      const data = await response.json();
+      setForm((prev) => ({ ...prev, imageUrl: data.url }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      event.target.value = "";
     }
   };
 
@@ -247,6 +286,30 @@ export function BooksAdminClient({
             required
             className="rounded-lg border border-[#e6dccf] bg-white/80 px-3 py-2 text-sm outline-none focus:border-[#1f3a2f]"
           />
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="rounded-full border border-[#e6dccf] px-4 py-2 text-xs font-semibold text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
+            >
+              Upload image
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleUpload}
+              className="hidden"
+            />
+            {uploading ? (
+              <span className="text-xs text-[#6b5f54]">Uploading...</span>
+            ) : null}
+          </div>
+          {form.imageUrl ? (
+            <span className="text-xs text-[#6b5f54]">
+              Selected: {form.imageUrl}
+            </span>
+          ) : null}
         </label>
         <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54] lg:col-span-2">
           Description

@@ -3,13 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const items = [
-  { href: "/account", label: "Overview" },
-  { href: "/account/orders", label: "Orders" },
-  { href: "/account/settings", label: "Settings" },
-];
+type AccountNavItem = { href: string; label: string };
 
-export default function AccountNav() {
+export default function AccountNav({ items }: { items: AccountNavItem[] }) {
   const pathname = usePathname();
 
   return (

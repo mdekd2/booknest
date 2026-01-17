@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useClientTranslator } from "@/lib/i18n/client";
 
 export default function AccountAuthForms() {
   const [signInError, setSignInError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
   const [signingUp, setSigningUp] = useState(false);
+  const { t } = useClientTranslator();
 
   const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,7 +28,9 @@ export default function AccountAuthForms() {
 
     setSigningIn(false);
     if (!response?.ok) {
-      setSignInError("Invalid email or password");
+      setSignInError(t("auth.invalid"));
+    } else {
+      window.location.href = "/";
     }
   };
 
@@ -57,7 +61,7 @@ export default function AccountAuthForms() {
       await signIn("credentials", {
         email: payload.email,
         password: payload.password,
-        callbackUrl: "/account",
+        callbackUrl: "/",
       });
     } catch (error) {
       setSignUpError(
@@ -70,10 +74,12 @@ export default function AccountAuthForms() {
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-[#1f1a17]">Log in</h1>
+        <h1 className="text-2xl font-semibold text-[#1f1a17]">
+          {t("account.signIn")}
+        </h1>
         <form onSubmit={handleSignIn} className="mt-6 space-y-4">
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            Email
+            {t("auth.email")}
             <input
               type="email"
               name="email"
@@ -82,7 +88,7 @@ export default function AccountAuthForms() {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            Password
+            {t("auth.password")}
             <input
               type="password"
               name="password"
@@ -98,16 +104,18 @@ export default function AccountAuthForms() {
             disabled={signingIn}
             className="inline-flex rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
           >
-            {signingIn ? "Signing in..." : "Log in"}
+            {signingIn ? t("auth.signingIn") : t("account.signIn")}
           </button>
         </form>
       </section>
 
       <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 shadow-sm">
-        <h2 className="text-2xl font-semibold text-[#1f1a17]">Create account</h2>
+        <h2 className="text-2xl font-semibold text-[#1f1a17]">
+          {t("account.signUp")}
+        </h2>
         <form onSubmit={handleSignUp} className="mt-6 space-y-4">
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            Name
+            {t("auth.name")}
             <input
               type="text"
               name="name"
@@ -116,7 +124,7 @@ export default function AccountAuthForms() {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            Email
+            {t("auth.email")}
             <input
               type="email"
               name="email"
@@ -125,7 +133,7 @@ export default function AccountAuthForms() {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            Password
+            {t("auth.password")}
             <input
               type="password"
               name="password"
@@ -142,7 +150,7 @@ export default function AccountAuthForms() {
             disabled={signingUp}
             className="inline-flex rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
           >
-            {signingUp ? "Creating account..." : "Sign up"}
+            {signingUp ? t("auth.creating") : t("account.signUp")}
           </button>
         </form>
       </section>

@@ -13,9 +13,13 @@ type AddToCartButtonProps = {
     currency: string;
     stock: number;
   };
+  labels?: {
+    add?: string;
+    outOfStock?: string;
+  };
 };
 
-export function AddToCartButton({ book }: AddToCartButtonProps) {
+export function AddToCartButton({ book, labels }: AddToCartButtonProps) {
   const { addItem, items } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const current = items.find((item) => item.bookId === book.id);
@@ -48,7 +52,9 @@ export function AddToCartButton({ book }: AddToCartButtonProps) {
       disabled={remaining <= 0 || isAdding}
       className="rounded-full bg-[#1f3a2f] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
     >
-      {remaining <= 0 ? "Out of stock" : "Add to cart"}
+      {remaining <= 0
+        ? labels?.outOfStock ?? "Out of stock"
+        : labels?.add ?? "Add to cart"}
     </button>
   );
 }
