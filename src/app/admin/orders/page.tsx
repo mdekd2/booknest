@@ -1,17 +1,14 @@
-import { prisma } from "@/lib/prisma";
+import { getAllOrders } from "@/lib/firestore";
 import { getTranslator } from "@/lib/i18n/server";
 import { AdminOrdersClient } from "@/components/admin/AdminOrdersClient";
 
 export default async function AdminOrdersPage() {
   const { t } = await getTranslator();
-  const orders = await prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { items: { include: { book: true } }, user: true },
-  });
+  const orders = await getAllOrders();
 
   const serialized = orders.map((order) => ({
     ...order,
-    createdAt: order.createdAt.toISOString(),
+    createdAt: order.createdAt?.toISOString() ?? "",
   }));
 
   return (

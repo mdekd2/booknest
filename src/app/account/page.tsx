@@ -1,28 +1,26 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { getAdminDb } from "@/lib/firebase/admin";
+import { getServerUser } from "@/lib/auth";
 import { formatPrice } from "@/lib/format";
 import AccountAuthForms from "./components/AccountAuthForms";
 import { getTranslator } from "@/lib/i18n/server";
+import { getOrdersByUser } from "@/lib/firestore";
 
 export default async function AccountPage() {
   const { t } = await getTranslator();
-  const session = await getServerSession(authOptions);
+  const session = await getServerUser();
 
   if (!session?.user?.id) {
     return <AccountAuthForms />;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
+  const adminDb = getAdminDb();
+  const userSnapshot = await adminDb.collection("users").doc(session.user.id).get();
+  const userData = userSnapshot.data() as
+    | { createdAt?: { toDate: () => Date }; name?: string }
+    | undefined;
 
-  const recentOrders = await prisma.order.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
+  const recentOrders = (await getOrdersByUser(session.user.id)).slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -40,7 +38,7 @@ export default async function AccountPage() {
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <InfoCard
             label={t("account.memberSince")}
-            value={user?.createdAt.toDateString() ?? "—"}
+            value={userData?.createdAt?.toDate().toDateString() ?? "—"}
           />
           <InfoCard label={t("account.orders")} value={`${recentOrders.length}`} />
           <InfoCard label={t("account.status")} value={t("account.active")} />
@@ -77,7 +75,7 @@ export default async function AccountPage() {
               >
                 <div className="font-medium">#{order.id.slice(0, 6)}</div>
                 <div className="text-[#6b5f54]">
-                  {order.createdAt.toLocaleDateString()}
+                  {order.createdAt?.toLocaleDateString() ?? ""}
                 </div>
                 <div className="font-medium">
                   {formatPrice(order.totalCents)}

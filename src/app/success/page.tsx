@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireStripe } from "@/lib/stripe";
 import { createOrderFromStripeSession } from "@/lib/orders";
-import { prisma } from "@/lib/prisma";
+import { getOrderByStripeSessionId } from "@/lib/firestore";
 import { ClearCartOnSuccess } from "@/components/cart/ClearCartOnSuccess";
 import { formatPrice } from "@/lib/format";
 import { getTranslator } from "@/lib/i18n/server";
@@ -37,10 +37,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   await createOrderFromStripeSession(session);
 
-  const order = await prisma.order.findFirst({
-    where: { stripeSessionId: sessionId },
-    include: { items: { include: { book: true } } },
-  });
+  const order = await getOrderByStripeSessionId(sessionId);
 
   return (
     <div className="space-y-6 rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 shadow-sm">
@@ -56,9 +53,9 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             {formatPrice(order.totalCents)}
           </p>
           <ul className="space-y-2 text-sm text-[#6b5f54]">
-            {order.items.map((item) => (
-              <li key={item.id}>
-                {item.book.title} × {item.quantity}
+            {order.items.map((item, index) => (
+              <li key={`${item.bookId}-${index}`}>
+                {item.title} × {item.quantity}
               </li>
             ))}
           </ul>

@@ -1,23 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { getServerUser } from "@/lib/auth";
+import { getOrdersByUser } from "@/lib/firestore";
 import { formatPrice } from "@/lib/format";
 import { getTranslator } from "@/lib/i18n/server";
 
 export default async function OrdersPage() {
   const { t } = await getTranslator();
-  const session = await getServerSession(authOptions);
+  const session = await getServerUser();
   if (!session?.user?.id) {
     redirect("/account");
   }
 
-  const orders = await prisma.order.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-    include: { items: { include: { book: true } } },
-  });
+  const orders = await getOrdersByUser(session.user.id);
 
   return (
     <div className="space-y-6">
@@ -61,9 +56,9 @@ export default async function OrdersPage() {
                 </span>
               </div>
               <ul className="mt-4 space-y-2 text-sm text-[#6b5f54]">
-                {order.items.map((item) => (
-                  <li key={item.id}>
-                    {item.book.title} × {item.quantity}
+                {order.items.map((item, index) => (
+                  <li key={`${item.bookId}-${index}`}>
+                    {item.title} × {item.quantity}
                   </li>
                 ))}
               </ul>

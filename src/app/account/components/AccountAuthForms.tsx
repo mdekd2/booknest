@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useClientTranslator } from "@/lib/i18n/client";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase/client";
 
 export default function AccountAuthForms() {
   const [signInError, setSignInError] = useState<string | null>(null);
@@ -20,17 +25,23 @@ export default function AccountAuthForms() {
     const email = String(form.get("email") ?? "");
     const password = String(form.get("password") ?? "");
 
-    const response = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setSigningIn(false);
-    if (!response?.ok) {
-      setSignInError(t("auth.invalid"));
-    } else {
+    try {
+      const credentials = await signInWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+      const token = await credentials.user.getIdToken();
+      await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: token }),
+      });
       window.location.href = "/";
+    } catch {
+      setSignInError(t("auth.invalid"));
+    } finally {
+      setSigningIn(false);
     }
   };
 
@@ -47,26 +58,26 @@ export default function AccountAuthForms() {
     };
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const credentials = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        payload.email,
+        payload.password
+      );
+      if (payload.name) {
+        await updateProfile(credentials.user, { displayName: payload.name });
+      }
+      const token = await credentials.user.getIdToken();
+      await fetch("/api/auth/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ idToken: token }),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error ?? "Sign up failed");
-      }
-
-      await signIn("credentials", {
-        email: payload.email,
-        password: payload.password,
-        callbackUrl: "/",
-      });
+      window.location.href = "/";
     } catch (error) {
       setSignUpError(
         error instanceof Error ? error.message : "Sign up failed"
       );
+    } finally {
       setSigningUp(false);
     }
   };

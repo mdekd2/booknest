@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getBookBySlug, getCategories } from "@/lib/firestore";
 import { formatPrice } from "@/lib/format";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { getTranslator } from "@/lib/i18n/server";
@@ -19,14 +19,15 @@ export default async function BookDetailsPage({
     notFound();
   }
 
-  const book = await prisma.book.findUnique({
-    where: { slug: resolvedParams.slug },
-    include: { category: true },
-  });
+  const [book, categories] = await Promise.all([
+    getBookBySlug(resolvedParams.slug),
+    getCategories(),
+  ]);
 
   if (!book) {
     notFound();
   }
+  const category = categories.find((item) => item.id === book.categoryId);
 
   const hasImage =
     !!book.imageUrl && !book.imageUrl.includes("placeholder");
@@ -46,7 +47,7 @@ export default async function BookDetailsPage({
       <div className="space-y-6">
         <div className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-widest text-[#6b5f54]">
-            {book.category.name}
+            {category?.name ?? ""}
           </p>
           <h1 className="text-3xl font-semibold text-[#1f1a17]">
             {book.title}

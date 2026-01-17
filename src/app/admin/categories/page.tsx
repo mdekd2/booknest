@@ -1,10 +1,8 @@
-import { prisma } from "@/lib/prisma";
+import { getCategories } from "@/lib/firestore";
 import { CategoriesAdminClient } from "@/components/admin/CategoriesAdminClient";
 
 export default async function AdminCategoriesPage() {
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
+  const categories = await getCategories();
 
   return <CategoriesAdminClient initialCategories={categories} />;
 }

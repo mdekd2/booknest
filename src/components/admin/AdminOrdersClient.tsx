@@ -4,9 +4,9 @@ import { useState } from "react";
 import { formatPrice } from "@/lib/format";
 
 type OrderItem = {
-  id: string;
+  bookId: string;
+  title: string;
   quantity: number;
-  book: { title: string };
 };
 
 type Order = {
@@ -15,7 +15,7 @@ type Order = {
   totalCents: number;
   currency: string;
   status: string;
-  user: { email: string };
+  userEmail?: string | null;
   items: OrderItem[];
 };
 
@@ -80,7 +80,7 @@ export function AdminOrdersClient({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase text-[#6b5f54]">
-                {order.user.email}
+                {order.userEmail ?? "—"}
               </p>
               <p className="text-sm text-[#6b5f54]">
                 {labels.orderTotal} {formatPrice(order.totalCents)}
@@ -103,9 +103,9 @@ export function AdminOrdersClient({
             </div>
           </div>
           <ul className="mt-3 space-y-1 text-sm text-[#6b5f54]">
-            {order.items.map((item) => (
-              <li key={item.id}>
-                {item.book.title} × {item.quantity}
+            {order.items.map((item, index) => (
+              <li key={`${item.bookId}-${index}`}>
+                {item.title} × {item.quantity}
               </li>
             ))}
           </ul>

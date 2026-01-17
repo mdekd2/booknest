@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getBooks, getCategories } from "@/lib/firestore";
 import { BookCard } from "@/components/books/BookCard";
 import { getTranslator } from "@/lib/i18n/server";
 
@@ -18,31 +18,34 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
   const categorySlug = resolvedParams.category;
   const sort = resolvedParams.sort;
 
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
+  const [categories, allBooks] = await Promise.all([
+    getCategories(),
+    getBooks(),
+  ]);
 
-  const books = await prisma.book.findMany({
-    where: {
-      ...(query
-        ? {
-            OR: [
-              { title: { contains: query } },
-              { author: { contains: query } },
-            ],
-          }
-        : {}),
-      ...(categorySlug
-        ? { category: { slug: categorySlug } }
-        : {}),
-    },
-    orderBy:
-      sort === "price-desc"
-        ? { priceCents: "desc" }
-        : sort === "price-asc"
-        ? { priceCents: "asc" }
-        : { createdAt: "desc" },
-  });
+  const categoryId = categorySlug
+    ? categories.find((category) => category.slug === categorySlug)?.id
+    : null;
+
+  const books = allBooks
+    .filter((book) =>
+      query
+        ? book.title.toLowerCase().includes(query.toLowerCase()) ||
+          book.author.toLowerCase().includes(query.toLowerCase())
+        : true
+    )
+    .filter((book) => (categoryId ? book.categoryId === categoryId : true))
+    .sort((a, b) => {
+      if (sort === "price-desc") {
+        return b.priceCents - a.priceCents;
+      }
+      if (sort === "price-asc") {
+        return a.priceCents - b.priceCents;
+      }
+      const aTime = a.createdAt ? a.createdAt.getTime() : 0;
+      const bTime = b.createdAt ? b.createdAt.getTime() : 0;
+      return bTime - aTime;
+    });
 
   return (
     <div className="space-y-6">

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { checkoutSchema } from "@/lib/validators";
-import { prisma } from "@/lib/prisma";
+import { getBooks } from "@/lib/firestore";
 import { requireStripe } from "@/lib/stripe";
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
+  let session;
+  try {
+    session = await requireUser();
+  } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,9 +24,7 @@ export async function POST(request: Request) {
     const { items } = checkoutSchema.parse(body);
     const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
-    const books = await prisma.book.findMany({
-      where: { id: { in: items.map((item) => item.bookId) } },
-    });
+    const books = await getBooks();
 
     const bookMap = new Map(books.map((book) => [book.id, book]));
     for (const item of items) {

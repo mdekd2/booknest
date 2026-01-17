@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut } from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase/client";
 
 type SidebarLabels = {
   dashboard: string;
@@ -54,7 +55,11 @@ export default function Sidebar({ labels }: { labels: SidebarLabels }) {
       <div className="border-t border-[#e6dccf] pt-4">
         <button
           type="button"
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={async () => {
+            await signOut(firebaseAuth);
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/";
+          }}
           className="w-full rounded-2xl bg-[#1f3a2f] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026]"
         >
           Log out

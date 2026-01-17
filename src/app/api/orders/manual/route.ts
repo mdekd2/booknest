@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { checkoutSchema } from "@/lib/validators";
-import { prisma } from "@/lib/prisma";
+import { FieldValue } from "firebase-admin/firestore";
+import { createOrder, getBooks } from "@/lib/firestore";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
+  let session;
+  try {
+    session = await requireUser();
+  } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -14,9 +17,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { items } = checkoutSchema.parse(body);
 
-    const books = await prisma.book.findMany({
-      where: { id: { in: items.map((item) => item.bookId) } },
-    });
+    const books = await getBooks();
 
     const bookMap = new Map(books.map((book) => [book.id, book]));
     for (const item of items) {
@@ -34,27 +35,31 @@ export async function POST(request: Request) {
       return sum + (book?.priceCents ?? 0) * item.quantity;
     }, 0);
 
-    const order = await prisma.$transaction(async (tx) => {
-      const created = await tx.order.create({
-        data: {
-          userId: session.user.id,
-          totalCents,
-          currency: "MRU",
-          status: "PENDING",
-        },
-      });
-
-      await tx.orderItem.createMany({
-        data: items.map((item) => ({
-          orderId: created.id,
+    const order = await createOrder({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      totalCents,
+      currency: "MRU",
+      status: "PENDING",
+      items: items.map((item) => {
+        const book = bookMap.get(item.bookId);
+        return {
           bookId: item.bookId,
+          title: book?.title ?? "Unknown",
           quantity: item.quantity,
-          priceCents: bookMap.get(item.bookId)?.priceCents ?? 0,
-        })),
-      });
-
-      return created;
+          priceCents: book?.priceCents ?? 0,
+          imageUrl: book?.imageUrl ?? "",
+        };
+      }),
     });
+
+    const adminDb = getAdminDb();
+    const batch = adminDb.batch();
+    for (const item of items) {
+      const ref = adminDb.collection("books").doc(item.bookId);
+      batch.update(ref, { stock: FieldValue.increment(-item.quantity) });
+    }
+    await batch.commit();
 
     return NextResponse.json({
       orderId: order.id,

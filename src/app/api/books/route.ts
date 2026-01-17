@@ -1,20 +1,25 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { bookSchema } from "@/lib/validators";
+import { createBook, getBooks, getCategories } from "@/lib/firestore";
 
 export async function GET() {
-  const books = await prisma.book.findMany({
-    include: { category: true },
-    orderBy: { createdAt: "desc" },
-  });
-  return NextResponse.json(books);
+  const [books, categories] = await Promise.all([
+    getBooks(),
+    getCategories(),
+  ]);
+  const payload = books.map((book) => ({
+    ...book,
+    category:
+      categories.find((category) => category.id === book.categoryId) ?? null,
+  }));
+  return NextResponse.json(payload);
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== "ADMIN") {
+  try {
+    await requireAdmin();
+  } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -22,12 +27,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = bookSchema.parse(body);
 
-    const book = await prisma.book.create({
-      data,
-      include: { category: true },
-    });
-
-    return NextResponse.json(book);
+    const book = await createBook(data);
+    const categoryList = await getCategories();
+    const category =
+      categoryList.find((item) => item.id === book.categoryId) ?? null;
+    return NextResponse.json({ ...book, category });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Invalid request" },

@@ -3,6 +3,9 @@ export type Locale = (typeof locales)[number];
 
 export const messages = {
   en: {
+    general: {
+      loading: "Loading...",
+    },
     nav: {
       books: "Books",
       orders: "Orders",
@@ -152,6 +155,9 @@ export const messages = {
     },
   },
   fr: {
+    general: {
+      loading: "Chargement...",
+    },
     nav: {
       books: "Livres",
       orders: "Commandes",
@@ -301,6 +307,9 @@ export const messages = {
     },
   },
   ar: {
+    general: {
+      loading: "جاري التحميل...",
+    },
     nav: {
       books: "الكتب",
       orders: "الطلبات",

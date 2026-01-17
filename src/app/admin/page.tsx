@@ -1,15 +1,11 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getAllOrders } from "@/lib/firestore";
 import { formatPrice } from "@/lib/format";
 import { getTranslator } from "@/lib/i18n/server";
 
 export default async function AdminPage() {
   const { t } = await getTranslator();
-  const orders = await prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-    include: { user: true },
-  });
+  const orders = (await getAllOrders()).slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -51,7 +47,7 @@ export default async function AdminPage() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold text-[#1f1a17]">
-                    {order.user.email}
+                    {order.userEmail ?? order.userId}
                   </span>
                   <span>{formatPrice(order.totalCents)}</span>
                 </div>

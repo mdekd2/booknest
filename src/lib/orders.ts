@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
-import { prisma } from "@/lib/prisma";
+import { getAdminDb } from "@/lib/firebase/admin";
+import { createOrder, getBooks } from "@/lib/firestore";
 
 type CartItem = { bookId: string; quantity: number };
 
@@ -10,12 +11,15 @@ export async function createOrderFromStripeSession(
     return null;
   }
 
-  const existing = await prisma.order.findFirst({
-    where: { stripeSessionId: session.id },
-  });
-
+  const adminDb = getAdminDb();
+  const existingSnapshot = await adminDb
+    .collection("orders")
+    .where("stripeSessionId", "==", session.id)
+    .limit(1)
+    .get();
+  const existing = existingSnapshot.docs[0];
   if (existing) {
-    return existing;
+    return { id: existing.id, ...(existing.data() as object) };
   }
 
   const cartRaw = session.metadata?.cart ?? "[]";
@@ -24,9 +28,7 @@ export async function createOrderFromStripeSession(
     return null;
   }
 
-  const books = await prisma.book.findMany({
-    where: { id: { in: items.map((item) => item.bookId) } },
-  });
+  const books = await getBooks();
 
   const bookMap = new Map(books.map((book) => [book.id, book]));
   for (const item of items) {
@@ -41,34 +43,22 @@ export async function createOrderFromStripeSession(
     return sum + (book?.priceCents ?? 0) * item.quantity;
   }, 0);
 
-  return await prisma.$transaction(async (tx) => {
-    const order = await tx.order.create({
-      data: {
-        userId: session.metadata?.userId ?? "",
-        totalCents,
-        currency: "USD",
-        status: "CONFIRMED",
-        stripeSessionId: session.id,
-      },
-    });
-
-    await tx.orderItem.createMany({
-      data: items.map((item) => ({
-        orderId: order.id,
+  return await createOrder({
+    userId: session.metadata?.userId ?? "",
+    totalCents,
+    currency: "MRU",
+    status: "CONFIRMED",
+    stripeSessionId: session.id,
+    items: items.map((item) => {
+      const book = bookMap.get(item.bookId);
+      return {
         bookId: item.bookId,
+        title: book?.title ?? "Book",
         quantity: item.quantity,
-        priceCents: bookMap.get(item.bookId)?.priceCents ?? 0,
-      })),
-    });
-
-    for (const item of items) {
-      await tx.book.update({
-        where: { id: item.bookId },
-        data: { stock: { decrement: item.quantity } },
-      });
-    }
-
-    return order;
+        priceCents: book?.priceCents ?? 0,
+        imageUrl: book?.imageUrl ?? "",
+      };
+    }),
   });
 }
 

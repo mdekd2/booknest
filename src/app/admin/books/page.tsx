@@ -1,18 +1,25 @@
-import { prisma } from "@/lib/prisma";
+import { getBooks, getCategories } from "@/lib/firestore";
 import { BooksAdminClient } from "@/components/admin/BooksAdminClient";
 
 export default async function AdminBooksPage() {
   const [books, categories] = await Promise.all([
-    prisma.book.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { category: true },
-    }),
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
+    getBooks(),
+    getCategories(),
   ]);
+
+  const booksWithCategory = books.map((book) => ({
+    ...book,
+    category:
+      categories.find((category) => category.id === book.categoryId) ?? {
+        id: "",
+        name: "",
+        slug: "",
+      },
+  }));
 
   return (
     <BooksAdminClient
-      initialBooks={books}
+      initialBooks={booksWithCategory}
       initialCategories={categories}
     />
   );

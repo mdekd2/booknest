@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import Sidebar from "./components/Sidebar";
 import { getTranslator } from "@/lib/i18n/server";
 
@@ -10,8 +9,9 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const { t } = await getTranslator();
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== "ADMIN") {
+  try {
+    await requireAdmin();
+  } catch {
     redirect("/account");
   }
 

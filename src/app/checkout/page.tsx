@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatPrice } from "@/lib/format";
 import { useClientTranslator } from "@/lib/i18n/client";
 import { buildWhatsAppLink, manualPayments } from "@/lib/payments/manual";
 
 export default function CheckoutPage() {
-  const { data: session } = useSession();
+  const { user, loading: authLoading } = useAuth();
   const { items, totalCents } = useCart();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,15 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!session) {
+  if (authLoading) {
+    return (
+      <div className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 text-center text-sm text-[#6b5f54] shadow-sm">
+        {t("general.loading")}
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 text-center shadow-sm">
         <h1 className="text-2xl font-semibold text-[#1f1a17]">

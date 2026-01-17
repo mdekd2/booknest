@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { CartButton } from "@/components/cart/CartButton";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { signOut } from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase/client";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 type HeaderLabels = {
   books: string;
@@ -25,8 +27,7 @@ export function Header({
   labels: HeaderLabels;
   locale: string;
 }) {
-  const { data: session } = useSession();
-  const role = session?.user?.role;
+  const { user, role } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
@@ -63,13 +64,15 @@ export function Header({
         <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher locale={locale} label={labels.language} />
           <CartButton label={labels.cart} />
-          {session ? (
+          {user ? (
             <button
               onClick={async () => {
                 try {
-                  await signOut({ callbackUrl: "/" });
+                  await signOut(firebaseAuth);
+                  await fetch("/api/auth/logout", { method: "POST" });
+                  window.location.href = "/";
                 } catch {
-                  window.location.href = "/api/auth/signout?callbackUrl=/";
+                  window.location.href = "/";
                 }
               }}
               className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"
@@ -118,13 +121,15 @@ export function Header({
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <LanguageSwitcher locale={locale} label={labels.language} />
             <CartButton label={labels.cart} />
-            {session ? (
+            {user ? (
               <button
                 onClick={async () => {
                   try {
-                    await signOut({ callbackUrl: "/" });
+                    await signOut(firebaseAuth);
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    window.location.href = "/";
                   } catch {
-                    window.location.href = "/api/auth/signout?callbackUrl=/";
+                    window.location.href = "/";
                   }
                 }}
                 className="rounded-full border border-[#e6dccf] px-4 py-2 text-sm font-medium text-[#6b5f54] hover:border-[#d6c8b9] hover:text-[#1f1a17]"

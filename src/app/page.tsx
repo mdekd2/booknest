@@ -1,18 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
-import { prisma } from "@/lib/prisma";
+import { getCategories, getBooks } from "@/lib/firestore";
 import { BookCard } from "@/components/books/BookCard";
 import { getTranslator } from "@/lib/i18n/server";
 
 export default async function Home() {
   const { t } = await getTranslator();
-  const [categories, featuredBooks] = await Promise.all([
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.book.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 6,
-    }),
+  const [categories, books] = await Promise.all([
+    getCategories(),
+    getBooks(),
   ]);
+  const featuredBooks = books.slice(0, 6);
 
   return (
     <div className="space-y-12">

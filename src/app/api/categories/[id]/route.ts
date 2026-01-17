@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { categorySchema } from "@/lib/validators";
+import { updateCategory, deleteCategory } from "@/lib/firestore";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function PUT(request: Request, { params }: RouteParams) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== "ADMIN") {
+  try {
+    await requireAdmin();
+  } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -21,10 +21,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const body = await request.json();
     const data = categorySchema.parse(body);
 
-    const category = await prisma.category.update({
-      where: { id: resolvedParams.id },
-      data,
-    });
+    const category = await updateCategory(resolvedParams.id, data);
     return NextResponse.json(category);
   } catch (error) {
     return NextResponse.json(
@@ -35,8 +32,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== "ADMIN") {
+  try {
+    await requireAdmin();
+  } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -45,6 +43,6 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Missing category id." }, { status: 400 });
   }
 
-  await prisma.category.delete({ where: { id: resolvedParams.id } });
+  await deleteCategory(resolvedParams.id);
   return NextResponse.json({ ok: true });
 }

@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getServerUser } from "@/lib/auth";
 import AccountSidebar from "./components/AccountSidebar";
 import { getTranslator } from "@/lib/i18n/server";
 
@@ -9,7 +8,7 @@ export default async function AccountLayout({
   children: React.ReactNode;
 }) {
   const { t } = await getTranslator();
-  const session = await getServerSession(authOptions);
+  const session = await getServerUser();
 
   if (!session?.user?.id) {
     return <>{children}</>;
