@@ -12,6 +12,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  if (!params?.id) {
+    return NextResponse.json({ error: "Missing book id." }, { status: 400 });
+  }
+
   try {
     const body = await request.json();
     const data = bookSchema.parse(body);
@@ -35,6 +39,10 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  if (!params?.id) {
+    return NextResponse.json({ error: "Missing book id." }, { status: 400 });
   }
 
   await prisma.book.delete({ where: { id: params.id } });
