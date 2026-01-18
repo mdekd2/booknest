@@ -43,6 +43,15 @@ export type Order = {
   createdAt?: Date | null;
 };
 
+export type UserProfile = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: "ADMIN" | "USER" | string;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+};
+
 const toDate = (value: unknown) => {
   if (!value) return null;
   if (value instanceof Date) return value;
@@ -54,11 +63,22 @@ const toDate = (value: unknown) => {
 
 export async function getCategories() {
   const db = getAdminDb();
-  const snapshot = await db.collection("categories").orderBy("name").get();
-  return snapshot.docs.map((doc) => {
-    const data = doc.data() as Omit<Category, "id"> & { createdAt?: unknown };
-    return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
-  });
+  try {
+    const snapshot = await db.collection("categories").orderBy("name").get();
+    return snapshot.docs.map((doc) => {
+      const data = doc.data() as Omit<Category, "id"> & { createdAt?: unknown };
+      return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
+    });
+  } catch (error) {
+    const code =
+      typeof error === "object" && error !== null && "code" in error
+        ? (error as { code?: unknown }).code
+        : undefined;
+    if (code === 5) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export async function getCategoryBySlug(slug: string) {
@@ -76,11 +96,25 @@ export async function getCategoryBySlug(slug: string) {
 
 export async function getBooks() {
   const db = getAdminDb();
-  const snapshot = await db.collection("books").orderBy("createdAt", "desc").get();
-  return snapshot.docs.map((doc) => {
-    const data = doc.data() as Omit<Book, "id"> & { createdAt?: unknown };
-    return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
-  });
+  try {
+    const snapshot = await db
+      .collection("books")
+      .orderBy("createdAt", "desc")
+      .get();
+    return snapshot.docs.map((doc) => {
+      const data = doc.data() as Omit<Book, "id"> & { createdAt?: unknown };
+      return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
+    });
+  } catch (error) {
+    const code =
+      typeof error === "object" && error !== null && "code" in error
+        ? (error as { code?: unknown }).code
+        : undefined;
+    if (code === 5) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export async function getBooksByIds(ids: string[]) {
@@ -161,15 +195,26 @@ export async function deleteBook(id: string) {
 
 export async function getOrdersByUser(userId: string) {
   const db = getAdminDb();
-  const snapshot = await db
-    .collection("orders")
-    .where("userId", "==", userId)
-    .orderBy("createdAt", "desc")
-    .get();
-  return snapshot.docs.map((doc) => {
-    const data = doc.data() as Omit<Order, "id"> & { createdAt?: unknown };
-    return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
-  });
+  try {
+    const snapshot = await db
+      .collection("orders")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .get();
+    return snapshot.docs.map((doc) => {
+      const data = doc.data() as Omit<Order, "id"> & { createdAt?: unknown };
+      return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
+    });
+  } catch (error) {
+    const code =
+      typeof error === "object" && error !== null && "code" in error
+        ? (error as { code?: unknown }).code
+        : undefined;
+    if (code === 9) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export async function getAllOrders() {
@@ -178,6 +223,23 @@ export async function getAllOrders() {
   return snapshot.docs.map((doc) => {
     const data = doc.data() as Omit<Order, "id"> & { createdAt?: unknown };
     return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
+  });
+}
+
+export async function getAllUsers() {
+  const db = getAdminDb();
+  const snapshot = await db.collection("users").orderBy("updatedAt", "desc").get();
+  return snapshot.docs.map((doc) => {
+    const data = doc.data() as Omit<UserProfile, "id"> & {
+      createdAt?: unknown;
+      updatedAt?: unknown;
+    };
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: toDate(data.createdAt),
+      updatedAt: toDate(data.updatedAt),
+    };
   });
 }
 

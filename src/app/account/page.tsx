@@ -11,7 +11,17 @@ export default async function AccountPage() {
   const session = await getServerUser();
 
   if (!session?.user?.id) {
-    return <AccountAuthForms />;
+    const labels = {
+      signIn: t("account.signIn"),
+      signUp: t("account.signUp"),
+      email: t("auth.email"),
+      password: t("auth.password"),
+      name: t("auth.name"),
+      signingIn: t("auth.signingIn"),
+      creating: t("auth.creating"),
+      invalid: t("auth.invalid"),
+    };
+    return <AccountAuthForms labels={labels} />;
   }
 
   const adminDb = getAdminDb();

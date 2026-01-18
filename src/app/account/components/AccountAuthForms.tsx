@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useClientTranslator } from "@/lib/i18n/client";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -9,12 +8,26 @@ import {
 } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase/client";
 
-export default function AccountAuthForms() {
+type AccountAuthLabels = {
+  signIn: string;
+  signUp: string;
+  email: string;
+  password: string;
+  name: string;
+  signingIn: string;
+  creating: string;
+  invalid: string;
+};
+
+export default function AccountAuthForms({
+  labels,
+}: {
+  labels: AccountAuthLabels;
+}) {
   const [signInError, setSignInError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
   const [signingUp, setSigningUp] = useState(false);
-  const { t } = useClientTranslator();
 
   const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,7 +52,7 @@ export default function AccountAuthForms() {
       });
       window.location.href = "/";
     } catch {
-      setSignInError(t("auth.invalid"));
+      setSignInError(labels.invalid);
     } finally {
       setSigningIn(false);
     }
@@ -86,11 +99,11 @@ export default function AccountAuthForms() {
     <div className="grid gap-8 lg:grid-cols-2">
       <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 shadow-sm">
         <h1 className="text-2xl font-semibold text-[#1f1a17]">
-          {t("account.signIn")}
+          {labels.signIn}
         </h1>
         <form onSubmit={handleSignIn} className="mt-6 space-y-4">
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            {t("auth.email")}
+            {labels.email}
             <input
               type="email"
               name="email"
@@ -99,7 +112,7 @@ export default function AccountAuthForms() {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            {t("auth.password")}
+            {labels.password}
             <input
               type="password"
               name="password"
@@ -115,18 +128,18 @@ export default function AccountAuthForms() {
             disabled={signingIn}
             className="inline-flex rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
           >
-            {signingIn ? t("auth.signingIn") : t("account.signIn")}
+            {signingIn ? labels.signingIn : labels.signIn}
           </button>
         </form>
       </section>
 
       <section className="rounded-3xl border border-[#e6dccf] bg-[#fffaf4] p-8 shadow-sm">
         <h2 className="text-2xl font-semibold text-[#1f1a17]">
-          {t("account.signUp")}
+          {labels.signUp}
         </h2>
         <form onSubmit={handleSignUp} className="mt-6 space-y-4">
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            {t("auth.name")}
+            {labels.name}
             <input
               type="text"
               name="name"
@@ -135,7 +148,7 @@ export default function AccountAuthForms() {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            {t("auth.email")}
+            {labels.email}
             <input
               type="email"
               name="email"
@@ -144,7 +157,7 @@ export default function AccountAuthForms() {
             />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-[#6b5f54]">
-            {t("auth.password")}
+            {labels.password}
             <input
               type="password"
               name="password"
@@ -161,7 +174,7 @@ export default function AccountAuthForms() {
             disabled={signingUp}
             className="inline-flex rounded-full bg-[#1f3a2f] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#183026] disabled:cursor-not-allowed disabled:bg-[#b9b1a7]"
           >
-            {signingUp ? t("auth.creating") : t("account.signUp")}
+            {signingUp ? labels.creating : labels.signUp}
           </button>
         </form>
       </section>

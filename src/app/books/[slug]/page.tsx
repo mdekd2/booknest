@@ -65,6 +65,7 @@ export default async function BookDetailsPage({
             book={book}
             labels={{
               add: t("cart.addToCart"),
+              added: t("cart.added"),
               outOfStock: t("cart.outOfStock"),
             }}
           />

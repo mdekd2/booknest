@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 
 const SESSION_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 7;
-const ADMIN_EMAIL = "admin@admin.com";
+const ADMIN_EMAILS = ["admin@admin.com", "md.elk3122@gmail.com"];
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const role =
       snapshot.exists && snapshot.data()?.role
         ? snapshot.data()?.role
-        : decoded.email === ADMIN_EMAIL
+        : ADMIN_EMAILS.includes(decoded.email ?? "")
           ? "ADMIN"
           : "USER";
 
