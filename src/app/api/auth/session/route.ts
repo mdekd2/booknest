@@ -19,7 +19,8 @@ export async function POST(request: Request) {
       expiresIn: SESSION_MAX_AGE_MS,
     });
 
-    cookies().set("__session", sessionCookie, {
+    const cookieStore = await Promise.resolve(cookies());
+    cookieStore.set("__session", sessionCookie, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
