@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import path from "path";
 import { randomUUID } from "crypto";
-import { writeFile, mkdir } from "fs/promises";
+import { getAdminStorage } from "@/lib/firebase/admin";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -17,11 +16,29 @@ export async function POST(request: Request) {
 
   const extension = file.name.split(".").pop() || "png";
   const filename = `${randomUUID()}.${extension}`;
-  const uploadsDir = path.join(process.cwd(), "public", "images", "books");
-
-  await mkdir(uploadsDir, { recursive: true });
+  const objectPath = `images/books/${filename}`;
   const bytes = await file.arrayBuffer();
-  await writeFile(path.join(uploadsDir, filename), Buffer.from(bytes));
 
-  return NextResponse.json({ url: `/images/books/${filename}` });
+  const storage = getAdminStorage();
+  const bucket = storage.bucket();
+  if (!bucket?.name) {
+    return NextResponse.json(
+      { error: "Storage bucket is not configured." },
+      { status: 500 }
+    );
+  }
+
+  const fileRef = bucket.file(objectPath);
+  await fileRef.save(Buffer.from(bytes), {
+    contentType: file.type,
+    resumable: false,
+  });
+  try {
+    await fileRef.makePublic();
+  } catch {
+    // Ignore if public access is restricted; signed URL could be added later.
+  }
+
+  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${objectPath}`;
+  return NextResponse.json({ url: publicUrl });
 }

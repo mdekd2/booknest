@@ -2,6 +2,7 @@ import "server-only";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 function getFirebaseAdminApp() {
   if (getApps().length) {
@@ -16,6 +17,9 @@ function getFirebaseAdminApp() {
   const privateKey = normalizeEnv(process.env.FIREBASE_PRIVATE_KEY)
     ?.replace(/\\n/g, "\n")
     .replace(/\r/g, "");
+  const storageBucket =
+    normalizeEnv(process.env.FIREBASE_STORAGE_BUCKET) ??
+    normalizeEnv(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
 
   if (!projectId || !clientEmail || !privateKey) {
     throw new Error("Firebase admin credentials are not set.");
@@ -27,6 +31,7 @@ function getFirebaseAdminApp() {
       clientEmail,
       privateKey,
     }),
+    storageBucket: storageBucket || undefined,
   });
 }
 
@@ -36,4 +41,8 @@ export function getAdminAuth() {
 
 export function getAdminDb() {
   return getFirestore(getFirebaseAdminApp());
+}
+
+export function getAdminStorage() {
+  return getStorage(getFirebaseAdminApp());
 }
