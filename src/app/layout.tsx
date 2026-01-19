@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: "BookNest Online Bookstore",
   description: "Browse and buy books with BookNest.",
   icons: {
-    icon: "/images/logo.png",
-    apple: "/images/logo.png",
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
